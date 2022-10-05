@@ -1,8 +1,5 @@
 # GradientBoosting
-GradientBoosting原理学习并用于解决Kaggle入门题目：
-## Spaceship Titanic
-
-Predict which passengers are transported to an alternate dimension
+GradientBoosting原理学习并用于解决Kaggle入门题目：Spaceship Titanic,Predict which passengers are transported to an alternate dimension
 
 <b> 梯度提升算法(GradientBoosting)的核心是通过增加弱决策树，对损失函数的梯度进行更新，从而实现最小化损失函数</b>
 
@@ -16,9 +13,23 @@ GradientBoosting算法既可以用于回归问题，也可以用于解决分类�
 
 $$L=\frac1n\sum_{i=0}^n(y_i-\gamma)^2$$
 
-$$\Gamma(z) = \int_0^\infty t^{z-1}e^{-t}dt\,.$$
+我们需要思考的一点是，这里，$y_i$是目标值（Target  Label，数字），$\gamma$是预测值，在这个函数中，$\gamma$是我们要求解的变量
 
+第一步，建立基础模型，初始化预测值。思考神经网络的梯度更新方法，我们需要初始化变量（在神经网络中，变量是权重，而这里，变量是我们要求解的预测值）。一个简单的方式是设置初始预测值为所有训练样本的目标值的平均值，也就是让测试样本在初始预测中的结果为同一个值。
 
+第二步，计算残差(residual),即计算每个样本的目标值与第一步的基础模型预测值的差值，即
+
+$y_i-\gamma_i$,i=1,2,3,...,n。这里需要先理解差值的含义，根据我们使用的损失函数，
+
+对损失函数L求梯度，为了便于更直观的理解，这里我们先调整一下损失函数，令$L=\frac12x\frac1n\sum_{i=0}^n(y_i-\gamma)^2$：
+
+$\frac{dL}{d\gamma_i}=(y_i-\gamma_i)$,这里可以看出,差值$y_i-\gamma_i$即为损失函数的梯度。那么根据梯度下降原理，沿着梯度方向，能获得损失函数的最小值
+
+第三步，引入一颗弱决策树$h_i(x)$，这颗决策树的作用是对残差进行预测。为什么是对残差，而不是对target label进行预测呢？因为我们目的是做梯度更新，通过对残差进行归回，将产生新的预测值，进而实现损失函数的降低。
+
+第四步，找出这颗弱决策树每个叶子节点的输出（即新的预测值），决策树的回归结果是有限个值，会存在一个叶子的预测值对应多个残差值的情况。这个时候，我们将所有叶子节点对应的残差值进行平均，作为该叶子节点的输出值。
+
+$$\gamma_{m,i}=argmin_{\gamma}\sum_{i=0}^nL(y_i,F_{m-1}(x_i)+h_m(x_i))$$
 
 
 
