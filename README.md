@@ -7,7 +7,7 @@ GradientBoosting算法既可以用于回归问题，也可以用于解决分类�
 
 回归使用的损失函数是<b>MSE</b>，分类使用的是<b>对数似然</b>。
 
-### 回归问题
+### 回归问题(Regressor)
 
 既然是用梯度来最小化损失函数，我们有必要先引入损失函数
 
@@ -88,6 +88,9 @@ $$F_1(x)=F_0(x)+\nu_0h_m(x)$$
 | 17.10          | 18.9           | 26.4        | -7.5      |
 
 第三、四步，引入一颗弱决策树，对特征x和目标值residual1进行归回训练，为了演示方便，设置max_depth=1,即得到一颗最简单的二叉树。结果如下：
+
+
+
 ![回归图](images/1.png)
 
 也就是说，我们对第一颗决策树得到的回归结果是将样本分为了两类，每一类都是5个样本，一类的预测值是-5.0，另一类的预测值是5.0.这个时候得到如下的图示结果：
@@ -112,4 +115,34 @@ prediction1=prediction0+0.1*residual_prediction1。这样，我们就完成了�
 需要指出，最终的结果形如：
 
 ![回归图](images/2.png)
+
+分类问题(Classifier)
+
+Gradient Boosting Classifier用于解决0-1的二分类问题，这时损失函数使用对数损失函数。
+
+$$L=-\sum_{i=1}^n(y_ilog(p_i)+(1-y_i)log(1-p_i))$$
+
+其中$y_i$为标签值$p_i$为结果为1的概率，需要注意一下，由于{y_i}取值为0，1。那么求和的两项$y_ilog(p_i)$和$(1-y_i)log(1-p_i))$同时必然有一项为0
+
+另外，还需要注意一点，该损失函数的概率$p_i$本质上是一个函数，也就是说，决策树输出的值x，需要经过一个函数$p_i=h(x_i)$转换为0-1之间的概率值。
+
+这里使用的是sigmoid函数，即
+
+$$p_i=\frac1{1+e^{x_i}}$$
+
+采用链式求导法则，损失函数L对x求偏导数：
+
+$$\frac{\delta{L}}{\delta{p_i}}\frac{\delta{p_i}}{\delta{x_i}}$$
+
+其中，
+
+$$\frac{\delta{L}}{\delta{p_i}}=-\frac{y_i}{p_i}+\frac{1-y_i}{1-p_i}$$
+
+$$\frac{\delta{p_i}}{\delta{x_i}}=p_i*(1-p_i)$$
+
+最终，我们得到，
+
+$$\frac{\delta{L}}{\delta{p_i}}\frac{\delta{p_i}}{\delta{x_i}}=(-\frac{y_i}{p_i}+\frac{1-y_i}{1-p_i})p_i*(1-p_i)=p_i-y_i$$
+
+
 
